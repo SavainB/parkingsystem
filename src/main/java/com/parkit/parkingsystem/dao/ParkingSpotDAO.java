@@ -56,4 +56,28 @@ public class ParkingSpotDAO {
         }
     }
 
+    public ParkingSpot getParkingSpot(int id) {
+        // Obtenir l'emplacement de stationnement correspondant à l'ID spécifié
+        Connection con = null;
+        ParkingSpot parkingSpot = null; // Ajout de la variable pour stocker l'emplacement de stationnement
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.CHECK_PARKING_AVAILABILITY);
+            ps.setInt(1, id); // Utilisation de setInt() pour spécifier l'ID
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                parkingSpot = new ParkingSpot();
+                parkingSpot.setId(rs.getInt("PARKING_NUMBER"));
+                parkingSpot.setAvailable(rs.getBoolean("AVAILABLE"));
+            }
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
+        } catch (Exception ex) {
+            logger.error("Error fetching parking spot", ex);
+        } finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return parkingSpot;
+    }
+
 }

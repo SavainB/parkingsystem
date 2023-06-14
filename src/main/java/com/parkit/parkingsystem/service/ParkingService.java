@@ -27,7 +27,7 @@ public class ParkingService {
         this.ticketDAO = ticketDAO;
     }
 
-    public void processIncomingVehicle() {
+    public Ticket processIncomingVehicle() {
         try{
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
@@ -52,6 +52,7 @@ public class ParkingService {
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
         }
+        return null;
     }
 
     private String getVehichleRegNumber() throws Exception {
