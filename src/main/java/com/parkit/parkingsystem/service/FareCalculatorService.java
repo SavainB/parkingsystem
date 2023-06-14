@@ -24,7 +24,7 @@ public class FareCalculatorService {
             switch (ticket.getParkingSpot().getParkingType()) {
                 case BIKE:
                 case CAR: {
-                    ticket.setPrice(0);
+                    ticket.setPrice(Fare.RATE_UNDER_THIRTY);
                     break;
                 }
                 default: throw new IllegalArgumentException("Unknown Parking Type");
