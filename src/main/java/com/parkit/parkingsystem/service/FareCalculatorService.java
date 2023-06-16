@@ -21,8 +21,15 @@ public class FareCalculatorService {
         int durationMinutes = (int) Math.ceil(duration / (60.0 * 1000.0));
 
 
-        double reductionClient = ticketDAO.isReccurentClient(ticket.getVehicleRegNumber()) ? Fare.REDUCTION : 1;
-
+        double reductionClient;
+        if(ticketDAO.isReccurentClient(ticket.getVehicleRegNumber())){
+            System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
+            reductionClient =  Fare.REDUCTION;
+        }
+        else
+        {
+            reductionClient =1;
+        }
         if (durationMinutes < STILLFREE) {
             ticket.setPrice(Fare.RATE_UNDER_THIRTY);
         } else {
