@@ -28,6 +28,7 @@ public class ParkingService {
     }
 
     public Ticket processIncomingVehicle() {
+        Ticket ticket = null;
         try{
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
@@ -36,7 +37,7 @@ public class ParkingService {
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
 
                 Date inTime = new Date();
-                Ticket ticket = new Ticket();
+                ticket = new Ticket();
                 //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
                 //ticket.setId(ticketID);
                 ticket.setParkingSpot(parkingSpot);
@@ -52,7 +53,7 @@ public class ParkingService {
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
         }
-        return null;
+        return ticket;
     }
 
     private String getVehichleRegNumber() throws Exception {
@@ -98,12 +99,15 @@ public class ParkingService {
         }
     }
 
-    public void processExitingVehicle() {
+    public Ticket processExitingVehicle() {
+        Ticket ticket = null;
         try{
             String vehicleRegNumber = getVehichleRegNumber();
-            Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
+            ticket = ticketDAO.getTicket(vehicleRegNumber);
             Date outTime = new Date();
             ticket.setOutTime(outTime);
+            boolean isClient = ticketDAO.isReccurentClient(ticket.getVehicleRegNumber());
+            ticket.setClient(isClient);
             fareCalculatorService.calculateFare(ticket);
             if(ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
@@ -117,5 +121,6 @@ public class ParkingService {
         }catch(Exception e){
             logger.error("Unable to process exiting vehicle",e);
         }
+        return ticket;
     }
 }

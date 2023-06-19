@@ -21,30 +21,31 @@ public class FareCalculatorService {
         int durationMinutes = (int) Math.ceil(duration / (60.0 * 1000.0));
 
 
-        double reductionClient;
-        if(ticketDAO.isReccurentClient(ticket.getVehicleRegNumber())){
+        double tauxClient;
+        if (ticket.isClient()) {
             System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
-            reductionClient =  Fare.REDUCTION;
-        }
-        else
-        {
-            reductionClient =1;
+            tauxClient = Fare.REDUCTION;
+        } else {
+            tauxClient = 1;
         }
         if (durationMinutes < STILLFREE) {
             ticket.setPrice(Fare.RATE_UNDER_THIRTY);
         } else {
             switch (ticket.getParkingSpot().getParkingType()) {
                 case CAR: {
-                    ticket.setPrice((durationMinutes * (Fare.CAR_RATE_PER_HOUR / 60))  * reductionClient);
+                    double carPrice = (durationMinutes * (Fare.CAR_RATE_PER_HOUR / 60)) * tauxClient;
+                    ticket.setPrice(Math.round(carPrice * 100.0) / 100.0);
                     break;
                 }
                 case BIKE: {
-                    ticket.setPrice((durationMinutes * (Fare.BIKE_RATE_PER_HOUR / 60)) * reductionClient);
+                    double bikePrice = (durationMinutes * (Fare.BIKE_RATE_PER_HOUR / 60)) * tauxClient;
+                    ticket.setPrice(Math.round(bikePrice * 100.0) / 100.0);
                     break;
                 }
                 default:
                     throw new IllegalArgumentException("Unkown Parking Type");
             }
+
         }
     }
 
